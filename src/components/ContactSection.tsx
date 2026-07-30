@@ -1,15 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { DEVELOPER_INFO, SOCIAL_LINKS } from '../data/portfolioData';
+import { DEVELOPER_INFO } from '../data/portfolioData';
 import { AccentThemeConfig } from '../types';
-import { Mail, Send, Copy, Check, Clock, MapPin, Sparkles, MessageSquare, Github, Linkedin, Twitter, Phone } from 'lucide-react';
+import {
+  MessageSquare,
+  Mail,
+  Phone,
+  Send,
+  Check,
+  Copy,
+  Clock,
+  Github,
+  Linkedin,
+} from 'lucide-react';
 
 interface ContactSectionProps {
   accentTheme: AccentThemeConfig;
   isDarkMode?: boolean;
 }
 
-export const ContactSection: React.FC<ContactSectionProps> = ({ accentTheme, isDarkMode = true }) => {
+export const ContactSection: React.FC<ContactSectionProps> = ({
+  accentTheme,
+  isDarkMode = true,
+}) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,32 +34,32 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ accentTheme, isD
   const [copiedPhone, setCopiedPhone] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [timeString, setTimeString] = useState('');
+  const [timeString, setTimeString] = useState<string>('');
 
-  // Subject quick presets
   const subjectPresets = [
     'Project Inquiry',
-    'Full Stack Role',
-    'Consulting / Advisory',
-    'Just saying hi 👋',
+    'AI / Watsonx Consultation',
+    'Customer Support Role',
+    'Job Opportunity',
+    'General Coffee Chat',
   ];
 
-  // Update live clock for developer timezone (India - IST)
+  // Update IST Time
   useEffect(() => {
-    const updateClock = () => {
-      const now = new Date();
-      const istTime = new Intl.DateTimeFormat('en-IN', {
+    const updateTime = () => {
+      const options: Intl.DateTimeFormatOptions = {
         timeZone: 'Asia/Kolkata',
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
         hour12: true,
-      }).format(now);
-      setTimeString(istTime);
+      };
+      setTimeString(new Date().toLocaleTimeString('en-US', options));
     };
-    updateClock();
-    const timer = setInterval(updateClock, 1000);
-    return () => clearInterval(timer);
+
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleCopyEmail = () => {
@@ -63,37 +76,35 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ accentTheme, isD
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) return;
-
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
       setSubmitted(true);
-      setFormData({
-        name: '',
-        email: '',
-        subject: 'Project Inquiry',
-        message: '',
-      });
-      setTimeout(() => setSubmitted(false), 5000);
-    }, 1000);
+      setFormData({ name: '', email: '', subject: 'Project Inquiry', message: '' });
+    }, 1200);
   };
 
   return (
     <section id="contact" className="py-24 px-4 sm:px-8 max-w-7xl mx-auto relative z-10">
       {/* Section Header */}
       <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-panel border border-slate-800">
+        <div
+          className={`inline-flex items-center gap-2 px-3 py-1 rounded-full glass-panel border ${
+            isDarkMode ? 'border-slate-800' : 'border-slate-300'
+          }`}
+        >
           <MessageSquare className={`w-3.5 h-3.5 ${accentTheme.textAccentClass}`} />
-          <span className="text-xs font-mono font-medium text-slate-300">GET IN TOUCH</span>
+          <span className={`text-xs font-mono font-medium ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+            GET IN TOUCH
+          </span>
         </div>
-        <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+        <h2 className={`text-3xl sm:text-5xl font-extrabold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
           Let's build something{' '}
           <span className={`bg-clip-text text-transparent bg-gradient-to-r ${accentTheme.accentClass}`}>
             extraordinary together
           </span>
         </h2>
-        <p className="text-base text-slate-400">
+        <p className={`text-base ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
           Have a project in mind, a job opportunity, or just want to talk software engineering? My inbox is always open.
         </p>
       </div>
@@ -108,19 +119,21 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ accentTheme, isD
           className="lg:col-span-5 space-y-6"
         >
           {/* Email Copy Card */}
-          <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-4">
-            <div className="flex items-center gap-2 text-xs font-mono text-slate-400 uppercase tracking-wider">
+          <div className={`glass-panel p-6 rounded-3xl border space-y-4 ${isDarkMode ? 'border-slate-800' : 'border-slate-300'}`}>
+            <div className={`flex items-center gap-2 text-xs font-mono uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
               <Mail className={`w-4 h-4 ${accentTheme.textAccentClass}`} />
               <span>Direct Email</span>
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-900 border border-slate-800 gap-2">
-              <span className="text-xs sm:text-sm font-mono text-slate-200 truncate">
+            <div className={`flex items-center justify-between p-3 rounded-2xl border gap-2 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-300'}`}>
+              <span className={`text-xs sm:text-sm font-mono truncate ${isDarkMode ? 'text-slate-200' : 'text-slate-800 font-semibold'}`}>
                 {DEVELOPER_INFO.email}
               </span>
               <button
                 onClick={handleCopyEmail}
-                className="p-2 rounded-xl glass-card text-slate-300 hover:text-white hover:border-slate-600 transition-all cursor-pointer shrink-0 flex items-center gap-1.5 text-xs"
+                className={`p-2 rounded-xl glass-card transition-all cursor-pointer shrink-0 flex items-center gap-1.5 text-xs ${
+                  isDarkMode ? 'text-slate-300 hover:text-white' : 'text-slate-700 hover:text-slate-900 border-slate-300'
+                }`}
                 title="Copy Email Address"
               >
                 {copiedEmail ? (
@@ -139,7 +152,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ accentTheme, isD
 
             <a
               href={`mailto:${DEVELOPER_INFO.email}?subject=${encodeURIComponent('Hello Nallamsetty Vasu')}`}
-              className={`w-full py-3 rounded-xl text-xs font-semibold text-slate-950 flex items-center justify-center gap-2 transition-all shadow-md bg-gradient-to-r ${accentTheme.accentClass}`}
+              className={`w-full py-3 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer bg-gradient-to-r ${accentTheme.accentClass}`}
             >
               <Send className="w-4 h-4" />
               <span>Open Native Mail Client</span>
@@ -147,19 +160,21 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ accentTheme, isD
           </div>
 
           {/* Phone / Call / WhatsApp Contact Card */}
-          <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-4">
-            <div className="flex items-center gap-2 text-xs font-mono text-slate-400 uppercase tracking-wider">
+          <div className={`glass-panel p-6 rounded-3xl border space-y-4 ${isDarkMode ? 'border-slate-800' : 'border-slate-300'}`}>
+            <div className={`flex items-center gap-2 text-xs font-mono uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
               <Phone className={`w-4 h-4 ${accentTheme.textAccentClass}`} />
               <span>Mobile Phone</span>
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-900 border border-slate-800 gap-2">
-              <span className="text-xs sm:text-sm font-mono text-slate-200 font-bold tracking-wider truncate">
-                {DEVELOPER_INFO.formattedPhone || '+91 90305 91931'}
+            <div className={`flex items-center justify-between p-3 rounded-2xl border gap-2 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-300'}`}>
+              <span className={`text-xs sm:text-sm font-mono font-bold tracking-wider truncate ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}>
+                {DEVELOPER_INFO.formattedPhone || '+91 90035 01931'}
               </span>
               <button
                 onClick={handleCopyPhone}
-                className="p-2 rounded-xl glass-card text-slate-300 hover:text-white hover:border-slate-600 transition-all cursor-pointer shrink-0 flex items-center gap-1.5 text-xs"
+                className={`p-2 rounded-xl glass-card transition-all cursor-pointer shrink-0 flex items-center gap-1.5 text-xs ${
+                  isDarkMode ? 'text-slate-300 hover:text-white' : 'text-slate-700 hover:text-slate-900 border-slate-300'
+                }`}
                 title="Copy Phone Number"
               >
                 {copiedPhone ? (
@@ -179,46 +194,54 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ accentTheme, isD
             <div className="grid grid-cols-2 gap-2">
               <a
                 href={`tel:${DEVELOPER_INFO.phone}`}
-                className="py-2.5 px-3 rounded-xl text-xs font-semibold bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-200 hover:text-white flex items-center justify-center gap-2 transition-all"
+                className={`py-2.5 px-3 rounded-xl text-xs font-semibold border flex items-center justify-center gap-2 transition-all ${
+                  isDarkMode
+                    ? 'bg-slate-900 border-slate-800 text-slate-200 hover:text-white'
+                    : 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200'
+                }`}
               >
-                <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                <Phone className="w-3.5 h-3.5 text-emerald-500" />
                 <span>Call Directly</span>
               </a>
               <a
                 href={`https://wa.me/91${DEVELOPER_INFO.phone}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="py-2.5 px-3 rounded-xl text-xs font-semibold bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-200 hover:text-white flex items-center justify-center gap-2 transition-all"
+                className={`py-2.5 px-3 rounded-xl text-xs font-semibold border flex items-center justify-center gap-2 transition-all ${
+                  isDarkMode
+                    ? 'bg-slate-900 border-slate-800 text-slate-200 hover:text-white'
+                    : 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200'
+                }`}
               >
-                <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+                <MessageSquare className="w-3.5 h-3.5 text-emerald-500" />
                 <span>WhatsApp</span>
               </a>
             </div>
           </div>
 
           {/* Timezone & Location Card (Indian Standard Time) */}
-          <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-3">
+          <div className={`glass-panel p-6 rounded-3xl border space-y-3 ${isDarkMode ? 'border-slate-800' : 'border-slate-300'}`}>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
+              <div className={`flex items-center gap-2 text-xs font-mono ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                 <Clock className={`w-4 h-4 ${accentTheme.textAccentClass}`} />
                 <span>India (IST)</span>
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-500 border border-emerald-500/30">
                 Online
               </span>
             </div>
 
-            <div className="text-2xl font-mono font-bold text-white tracking-wider">
+            <div className={`text-2xl font-mono font-bold tracking-wider ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
               {timeString || '12:00:00 PM'}
             </div>
-            <p className="text-[11px] text-slate-400">
+            <p className={`text-[11px] ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
               Usually responds within a few hours during Indian Standard Time (IST) business hours.
             </p>
           </div>
 
           {/* Social Links Cards */}
-          <div className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-4">
-            <div className="text-xs font-mono text-slate-400 uppercase tracking-wider">
+          <div className={`glass-panel p-6 rounded-3xl border space-y-4 ${isDarkMode ? 'border-slate-800' : 'border-slate-300'}`}>
+            <div className={`text-xs font-mono uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
               Social Profiles & Channels
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -226,7 +249,11 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ accentTheme, isD
                 href={DEVELOPER_INFO.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-600 transition-all flex items-center gap-2 text-xs text-slate-300 hover:text-white"
+                className={`p-3 rounded-2xl border transition-all flex items-center gap-2 text-xs ${
+                  isDarkMode
+                    ? 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white'
+                    : 'bg-slate-100 border-slate-300 text-slate-700 hover:text-slate-900'
+                }`}
               >
                 <Github className="w-4 h-4" />
                 <span className="truncate">GitHub: vasu-royal-2006</span>
@@ -235,10 +262,14 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ accentTheme, isD
                 href={DEVELOPER_INFO.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-600 transition-all flex items-center gap-2 text-xs text-slate-300 hover:text-white"
+                className={`p-3 rounded-2xl border transition-all flex items-center gap-2 text-xs ${
+                  isDarkMode
+                    ? 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white'
+                    : 'bg-slate-100 border-slate-300 text-slate-700 hover:text-slate-900'
+                }`}
               >
                 <Linkedin className="w-4 h-4" />
-                <span className="truncate">LinkedIn: nallamsetty-vasu</span>
+                <span className="truncate">LinkedIn: n-vasu</span>
               </a>
             </div>
           </div>
@@ -250,38 +281,48 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ accentTheme, isD
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="lg:col-span-7 glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 relative"
+          className={`lg:col-span-7 glass-panel p-6 sm:p-8 rounded-3xl border relative ${
+            isDarkMode ? 'border-slate-800' : 'border-slate-300'
+          }`}
         >
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">Your Name *</label>
+                <label className={`text-xs font-medium ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>Your Name *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Sarah Jenkins"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-slate-700 transition-all"
+                  className={`w-full px-4 py-2.5 rounded-xl text-xs transition-all focus:outline-none ${
+                    isDarkMode
+                      ? 'bg-slate-900 border border-slate-800 text-white placeholder-slate-500 focus:border-slate-700'
+                      : 'bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-500 shadow-sm'
+                  }`}
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">Your Email Address *</label>
+                <label className={`text-xs font-medium ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>Your Email Address *</label>
                 <input
                   type="email"
                   required
                   placeholder="e.g. sarah@company.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-slate-700 transition-all"
+                  className={`w-full px-4 py-2.5 rounded-xl text-xs transition-all focus:outline-none ${
+                    isDarkMode
+                      ? 'bg-slate-900 border border-slate-800 text-white placeholder-slate-500 focus:border-slate-700'
+                      : 'bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-500 shadow-sm'
+                  }`}
                 />
               </div>
             </div>
 
             {/* Subject Preset Buttons */}
             <div className="space-y-2">
-              <label className="text-xs font-medium text-slate-300">Inquiry Topic</label>
+              <label className={`text-xs font-medium ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>Inquiry Topic</label>
               <div className="flex flex-wrap gap-2">
                 {subjectPresets.map((preset) => {
                   const isSelected = formData.subject === preset;
@@ -293,7 +334,9 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ accentTheme, isD
                       className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                         isSelected
                           ? `${accentTheme.bgGlowClass} ${accentTheme.textAccentClass} border border-slate-700`
-                          : 'bg-slate-900 text-slate-400 border border-slate-800 hover:text-slate-200'
+                          : isDarkMode
+                          ? 'bg-slate-900 text-slate-400 border border-slate-800 hover:text-slate-200'
+                          : 'bg-slate-100 text-slate-600 border border-slate-300 hover:text-slate-900'
                       }`}
                     >
                       {preset}
@@ -304,27 +347,31 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ accentTheme, isD
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-300">Your Message *</label>
+              <label className={`text-xs font-medium ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>Your Message *</label>
               <textarea
                 required
                 rows={5}
                 placeholder="Tell me about your project, timeline, budget, or ideas..."
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-slate-700 transition-all resize-none"
+                className={`w-full px-4 py-3 rounded-xl text-xs transition-all resize-none focus:outline-none ${
+                  isDarkMode
+                    ? 'bg-slate-900 border border-slate-800 text-white placeholder-slate-500 focus:border-slate-700'
+                    : 'bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-500 shadow-sm'
+                }`}
               />
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full py-3.5 rounded-xl font-semibold text-xs text-slate-950 flex items-center justify-center gap-2 transition-all shadow-lg cursor-pointer bg-gradient-to-r ${accentTheme.accentClass} ${
+              className={`w-full py-3.5 rounded-xl font-semibold text-xs text-white flex items-center justify-center gap-2 transition-all shadow-lg cursor-pointer bg-gradient-to-r ${accentTheme.accentClass} ${
                 isSubmitting ? 'opacity-75 cursor-not-allowed' : 'hover:scale-[1.01]'
               }`}
             >
               {isSubmitting ? (
                 <>
-                  <span className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   <span>Sending Message...</span>
                 </>
               ) : (
@@ -343,18 +390,22 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ accentTheme, isD
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="absolute inset-0 bg-slate-950/95 backdrop-blur-md rounded-3xl p-8 flex flex-col items-center justify-center text-center space-y-4 z-20 border border-slate-800"
+                className={`absolute inset-0 backdrop-blur-md rounded-3xl p-8 flex flex-col items-center justify-center text-center space-y-4 z-20 border ${
+                  isDarkMode ? 'bg-slate-950/95 border-slate-800' : 'bg-white/95 border-slate-300'
+                }`}
               >
-                <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-500 border border-emerald-500/40 flex items-center justify-center">
                   <Check className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold text-white">Message Sent Successfully!</h3>
-                <p className="text-xs text-slate-300 max-w-sm">
+                <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Message Sent Successfully!</h3>
+                <p className={`text-xs max-w-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
                   Thank you for reaching out. Nallamsetty Vasu will get back to you shortly at your provided email.
                 </p>
                 <button
                   onClick={() => setSubmitted(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-200 hover:text-white"
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer ${
+                    isDarkMode ? 'bg-slate-800 text-slate-200 hover:text-white' : 'bg-slate-200 text-slate-800 hover:bg-slate-300'
+                  }`}
                 >
                   Send Another Message
                 </button>

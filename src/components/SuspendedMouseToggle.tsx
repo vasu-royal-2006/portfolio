@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
+import React, { useState, useEffect } from 'react';
+import { motion, useMotionValue, useSpring, useTransform, useAnimation } from 'motion/react';
 import { Sun, Moon, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import { AccentThemeConfig } from '../types';
 
@@ -17,15 +17,34 @@ export const SuspendedMouseToggle: React.FC<SuspendedMouseToggleProps> = ({
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   const [isPulling, setIsPulling] = useState(false);
+  const [isSwinging, setIsSwinging] = useState(false);
 
-  // Motion physics for dragging/pulling the mouse cord
+  // Motion values for physical rope pull & pendulum rotation
   const dragY = useMotionValue(0);
-  const springY = useSpring(dragY, { stiffness: 300, damping: 20 });
+  const ropeSpringY = useSpring(dragY, { stiffness: 350, damping: 18 });
+  const swingAngle = useMotionValue(0);
+  const springAngle = useSpring(swingAngle, { stiffness: 120, damping: 8 });
+  const controls = useAnimation();
 
-  // Transform cable height based on spring pull
-  const cableHeight = useTransform(springY, (y) => 130 + y);
+  // Dynamic rope length based on pull
+  const ropeLength = useTransform(ropeSpringY, (y) => 130 + y);
 
-  // Play a sleek synthetic click sound using Web Audio API
+  // Ambient pendulum sway effect when idle
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    const triggerAmbientSway = () => {
+      if (!isPulling) {
+        swingAngle.set(Math.random() > 0.5 ? 4 : -4);
+        setTimeout(() => swingAngle.set(0), 1200);
+      }
+      timeout = setTimeout(triggerAmbientSway, 6000);
+    };
+
+    timeout = setTimeout(triggerAmbientSway, 3000);
+    return () => clearTimeout(timeout);
+  }, [isPulling, swingAngle]);
+
+  // Audio feedback on pull
   const playClickSound = () => {
     if (!soundEnabled) return;
     try {
@@ -34,24 +53,26 @@ export const SuspendedMouseToggle: React.FC<SuspendedMouseToggleProps> = ({
         (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (!AudioCtx) return;
       const ctx = new AudioCtx();
+      
+      // Pull tension click
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(isDarkMode ? 880 : 440, ctx.currentTime);
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(isDarkMode ? 520 : 880, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(
-        isDarkMode ? 1320 : 660,
-        ctx.currentTime + 0.08
+        isDarkMode ? 960 : 440,
+        ctx.currentTime + 0.12
       );
 
-      gain.gain.setValueAtTime(0.12, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
 
       osc.start();
-      osc.stop(ctx.currentTime + 0.09);
+      osc.stop(ctx.currentTime + 0.13);
     } catch {
       // Ignore audio policy blocks
     }
@@ -60,177 +81,244 @@ export const SuspendedMouseToggle: React.FC<SuspendedMouseToggleProps> = ({
   const handleToggle = () => {
     playClickSound();
     onToggleTheme();
+    // Trigger pendulum recoil swing
+    setIsSwinging(true);
+    swingAngle.set(12);
+    setTimeout(() => {
+      swingAngle.set(-8);
+      setTimeout(() => {
+        swingAngle.set(4);
+        setTimeout(() => {
+          swingAngle.set(0);
+          setIsSwinging(false);
+        }, 300);
+      }, 300);
+    }, 300);
   };
 
   return (
     <div className="fixed top-0 right-4 sm:right-16 z-50 flex flex-col items-center pointer-events-auto">
-      {/* Top Mounting Bracket */}
+      {/* Ceiling Rope Mount Fixture */}
       <div
-        className={`w-4 h-2.5 rounded-b-md ${
+        className={`w-6 h-4 rounded-b-lg border-x border-b ${
           isDarkMode
-            ? 'bg-slate-800 border-x border-b border-slate-700'
-            : 'bg-slate-300 border-x border-b border-slate-400'
-        } shadow-md relative z-10 flex items-center justify-center`}
+            ? 'bg-slate-800 border-slate-700 shadow-slate-950/80'
+            : 'bg-slate-300 border-slate-400 shadow-slate-400/40'
+        } shadow-lg relative z-20 flex items-center justify-center`}
       >
-        <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+        <div
+          className="w-2 h-2 rounded-full transition-colors duration-300"
+          style={{ backgroundColor: accentTheme.hex }}
+        />
+        {/* Metal ring loop */}
+        <div className="absolute -bottom-2.5 w-3 h-3 rounded-full border-2 border-slate-500 bg-transparent" />
       </div>
 
-      {/* Hanging Cable */}
+      {/* Rope Suspension Group with Pendulum Motion */}
       <motion.div
-        className="w-[2px] transition-colors duration-300 relative"
-        style={{
-          height: cableHeight,
-          background: isDarkMode
-            ? `linear-gradient(to bottom, #3b82f6 0%, #1e293b 70%, ${accentTheme.hex} 100%)`
-            : `linear-gradient(to bottom, #2563eb 0%, #cbd5e1 70%, #3b82f6 100%)`,
-        }}
+        style={{ rotate: springAngle }}
+        className="flex flex-col items-center origin-top relative z-10"
       >
-        {/* Glow bead traveling down cable */}
+        {/* Braided Rope String */}
         <motion.div
-          animate={{ y: [0, 130, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-1.5 h-1.5 -left-[2px] absolute rounded-full bg-blue-400 blur-[1px] opacity-80"
-        />
-      </motion.div>
-
-      {/* Hanging Mouse Device */}
-      <motion.div
-        drag="y"
-        dragConstraints={{ top: 0, bottom: 60 }}
-        dragElastic={0.4}
-        dragSnapToOrigin
-        onDragStart={() => setIsPulling(true)}
-        onDragEnd={(_, info) => {
-          setIsPulling(false);
-          if (info.offset.y > 30) {
-            handleToggle();
-          }
-        }}
-        style={{ y: springY }}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
-        className="relative group cursor-grab active:cursor-grabbing select-none"
-      >
-        {/* Mouse Device Shell */}
-        <div
-          className={`relative w-12 h-20 rounded-full p-1.5 transition-all duration-300 shadow-2xl flex flex-col items-center justify-between border ${
-            isDarkMode
-              ? 'bg-[#0d1117] border-slate-700/80 shadow-blue-500/10 group-hover:border-blue-500/50 group-hover:shadow-blue-500/20'
-              : 'bg-white border-slate-300 shadow-slate-400/30 group-hover:border-blue-400 group-hover:shadow-blue-500/20'
-          }`}
+          className="relative transition-colors duration-300 flex flex-col items-center"
+          style={{ height: ropeLength }}
         >
-          {/* Cable Port */}
-          <div className="w-2 h-1.5 rounded-t-sm bg-slate-500/60 -mt-2.5 mb-1" />
-
-          {/* Mouse Buttons Line */}
-          <div className="w-full flex items-center justify-between px-1 pt-0.5">
-            <div
-              className={`w-3.5 h-4 rounded-tl-lg border-b border-r ${
-                isDarkMode ? 'border-slate-800' : 'border-slate-200'
-              }`}
+          {/* Braided Rope Texture using SVG */}
+          <svg
+            className="w-2 h-full overflow-visible"
+            preserveAspectRatio="none"
+            viewBox="0 0 8 100"
+          >
+            {/* Background Rope Shadow */}
+            <path
+              d="M4,0 L4,100"
+              stroke={isDarkMode ? '#0f172a' : '#cbd5e1'}
+              strokeWidth="5"
+              strokeLinecap="round"
             />
-
-            {/* Scroll Wheel Button */}
-            <motion.button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleToggle();
-              }}
-              whileTap={{ scale: 0.85, rotate: 180 }}
-              whileHover={{ scale: 1.15 }}
-              title="Click Wheel or Pull Cable to Toggle Mode"
-              className={`w-4 h-7 rounded-full flex items-center justify-center transition-all duration-300 shadow-inner cursor-pointer relative z-10 ${
-                isDarkMode
-                  ? 'bg-blue-600/30 text-cyan-300 border border-blue-400/50 hover:bg-blue-500 hover:text-white shadow-blue-500/30'
-                  : 'bg-amber-100 text-amber-600 border border-amber-300 hover:bg-amber-400 hover:text-white shadow-amber-500/20'
-              }`}
-            >
-              {isDarkMode ? (
-                <Moon className="w-2.5 h-2.5 drop-shadow-[0_0_4px_rgba(6,182,212,0.8)]" />
-              ) : (
-                <Sun className="w-2.5 h-2.5 drop-shadow-[0_0_4px_rgba(245,158,11,0.8)]" />
-              )}
-            </motion.button>
-
-            <div
-              className={`w-3.5 h-4 rounded-tr-lg border-b border-l ${
-                isDarkMode ? 'border-slate-800' : 'border-slate-200'
-              }`}
+            {/* Main Rope Body */}
+            <path
+              d="M4,0 L4,100"
+              stroke={isDarkMode ? '#475569' : '#94a3b8'}
+              strokeWidth="3.5"
+              strokeDasharray="4 2"
+              strokeLinecap="round"
             />
-          </div>
-
-          {/* Sensor LED & Text */}
-          <div className="my-auto flex flex-col items-center gap-1">
-            <div
-              className={`w-1.5 h-1.5 rounded-full ${
-                isDarkMode
-                  ? 'bg-cyan-400 shadow-[0_0_8px_#06b6d4]'
-                  : 'bg-blue-500 shadow-[0_0_8px_#3b82f6]'
-              }`}
+            {/* Woven Fiber Pattern Overlay */}
+            <path
+              d="M4,0 L4,100"
+              stroke={accentTheme.hex}
+              strokeWidth="1.5"
+              strokeDasharray="2 6"
+              strokeOpacity={isDarkMode ? '0.9' : '0.7'}
             />
-            <span
-              className={`text-[8px] font-mono tracking-tighter uppercase ${
-                isDarkMode ? 'text-slate-500' : 'text-slate-400'
-              }`}
-            >
-              {isDarkMode ? 'DARK' : 'LIGHT'}
-            </span>
-          </div>
+          </svg>
 
-          {/* Bottom Curve */}
-          <div
-            className={`w-8 h-3 rounded-b-xl border-t ${
-              isDarkMode ? 'border-slate-800 bg-slate-900/40' : 'border-slate-200 bg-slate-100'
-            }`}
-          />
-
-          {/* Ambient Glow */}
-          <div
-            className={`absolute -inset-1 rounded-full blur-md -z-10 transition-opacity duration-300 ${
-              isHovered || isPulling ? 'opacity-80' : 'opacity-20'
-            }`}
+          {/* Floating Fiber Glow Ring */}
+          <motion.div
+            animate={{ y: [0, 110, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-2.5 h-2.5 absolute rounded-full blur-[1px] opacity-80"
             style={{ backgroundColor: accentTheme.hex }}
           />
-        </div>
+        </motion.div>
 
-        {/* Tooltip */}
+        {/* Hanging Pull Knob Weight (Brightness / Theme Switcher Handle) */}
         <motion.div
-          initial={{ opacity: 0, x: 10, scale: 0.95 }}
-          animate={{
-            opacity: isHovered || isPulling ? 1 : 0,
-            x: isHovered || isPulling ? 0 : 10,
-            scale: isHovered || isPulling ? 1 : 0.95,
+          drag="y"
+          dragConstraints={{ top: 0, bottom: 55 }}
+          dragElastic={0.35}
+          dragSnapToOrigin
+          onDragStart={() => setIsPulling(true)}
+          onDragEnd={(_, info) => {
+            setIsPulling(false);
+            if (info.offset.y > 25) {
+              handleToggle();
+            }
           }}
-          transition={{ duration: 0.2 }}
-          className={`absolute right-14 top-1/2 -translate-y-1/2 whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-mono shadow-xl border pointer-events-none flex items-center gap-2 ${
-            isDarkMode
-              ? 'bg-slate-900/95 text-slate-200 border-slate-700/80 shadow-black/50'
-              : 'bg-white/95 text-slate-800 border-slate-200 shadow-slate-300/50'
-          }`}
+          style={{ y: ropeSpringY }}
+          onHoverStart={() => setIsHovered(true)}
+          onHoverEnd={() => setIsHovered(false)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="relative group cursor-grab active:cursor-grabbing select-none -mt-1"
         >
-          <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-          <span>{isPulling ? 'Release to toggle!' : 'Click wheel or pull cord'}</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 font-bold">
-            {isDarkMode ? 'LIGHT MODE' : 'DARK MODE'}
-          </span>
+          {/* Top Wooden / Metallic Knot Connector */}
+          <div
+            className={`w-4 h-3 mx-auto rounded-t-md border-t border-x ${
+              isDarkMode
+                ? 'bg-slate-800 border-slate-700'
+                : 'bg-slate-200 border-slate-400'
+            }`}
+          />
+
+          {/* Main Pull Bulb / Knob Body */}
+          <div
+            className={`relative w-12 h-16 rounded-3xl p-2 transition-all duration-300 shadow-2xl flex flex-col items-center justify-between border ${
+              isDarkMode
+                ? 'bg-[#0b0f17] border-slate-700/80 shadow-cyan-500/10 group-hover:border-cyan-400/80'
+                : 'bg-white border-slate-300 shadow-amber-500/20 group-hover:border-amber-400'
+            }`}
+          >
+            {/* Inner Bulb Lens */}
+            <div
+              className={`w-full flex-1 rounded-2xl flex flex-col items-center justify-center transition-all duration-300 relative overflow-hidden ${
+                isDarkMode
+                  ? 'bg-slate-900/90 border border-slate-800 text-cyan-300'
+                  : 'bg-amber-50/90 border border-amber-200 text-amber-600'
+              }`}
+            >
+              {/* Sun/Moon Icon Emblem */}
+              <motion.div
+                animate={isSwinging ? { rotate: [0, 360] } : {}}
+                transition={{ duration: 0.6 }}
+              >
+                {isDarkMode ? (
+                  <Moon className="w-6 h-6 text-cyan-400 drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
+                ) : (
+                  <Sun className="w-6 h-6 text-amber-500 drop-shadow-[0_0_10px_rgba(245,158,11,0.8)]" />
+                )}
+              </motion.div>
+
+              {/* Mode Text Label */}
+              <span
+                className={`text-[9px] font-mono font-bold tracking-wider uppercase mt-1 ${
+                  isDarkMode ? 'text-cyan-400/90' : 'text-amber-600/90'
+                }`}
+              >
+                {isDarkMode ? 'DARK' : 'LIGHT'}
+              </span>
+
+              {/* Ambient Internal Glow */}
+              <div
+                className={`absolute inset-0 rounded-2xl opacity-20 pointer-events-none transition-opacity ${
+                  isHovered || isPulling ? 'opacity-40' : 'opacity-20'
+                }`}
+                style={{
+                  background: isDarkMode
+                    ? 'radial-gradient(circle, rgba(6,182,212,0.6) 0%, transparent 70%)'
+                    : 'radial-gradient(circle, rgba(245,158,11,0.6) 0%, transparent 70%)',
+                }}
+              />
+            </div>
+
+            {/* Bottom Pull Ring / Grip */}
+            <div
+              className={`w-7 h-2 rounded-b-full border-b mt-1.5 transition-colors ${
+                isDarkMode
+                  ? 'bg-slate-800 border-cyan-400/60'
+                  : 'bg-amber-100 border-amber-400'
+              }`}
+            />
+
+            {/* Outer Soft Halo Glow */}
+            <div
+              className={`absolute -inset-1.5 rounded-3xl blur-md -z-10 transition-opacity duration-300 ${
+                isHovered || isPulling ? 'opacity-90 scale-105' : 'opacity-30'
+              }`}
+              style={{
+                backgroundColor: isDarkMode ? '#06b6d4' : '#f59e0b',
+              }}
+            />
+          </div>
+
+          {/* Interactive Tooltip Banner */}
+          <motion.div
+            initial={{ opacity: 0, x: 12, scale: 0.95 }}
+            animate={{
+              opacity: isHovered || isPulling ? 1 : 0,
+              x: isHovered || isPulling ? 0 : 12,
+              scale: isHovered || isPulling ? 1 : 0.95,
+            }}
+            transition={{ duration: 0.2 }}
+            className={`absolute right-16 top-1/2 -translate-y-1/2 whitespace-nowrap px-3.5 py-2 rounded-2xl text-xs font-mono shadow-2xl border pointer-events-none flex items-center gap-2.5 ${
+              isDarkMode
+                ? 'bg-slate-900/95 text-slate-100 border-slate-700/90 shadow-black/80'
+                : 'bg-white/95 text-slate-800 border-slate-300 shadow-slate-400/40'
+            }`}
+          >
+            <Sparkles
+              className={`w-4 h-4 ${
+                isDarkMode ? 'text-cyan-400' : 'text-amber-500'
+              }`}
+            />
+            <div className="flex flex-col">
+              <span className="font-semibold text-xs">
+                {isPulling ? 'Release cord to switch!' : 'Pull rope down to toggle'}
+              </span>
+              <span className="text-[10px] text-slate-400 font-normal">
+                {isDarkMode ? 'Current: Dark Mode' : 'Current: Light Mode'}
+              </span>
+            </div>
+            <span
+              className={`text-[10px] px-2 py-0.5 rounded-lg font-bold border uppercase tracking-wider ${
+                isDarkMode
+                  ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                  : 'bg-amber-500/20 text-amber-700 border-amber-500/40'
+              }`}
+            >
+              {isDarkMode ? 'LIGHT' : 'DARK'}
+            </span>
+          </motion.div>
         </motion.div>
       </motion.div>
 
-      {/* Audio Mute/Unmute */}
+      {/* Audio Mute/Unmute Mini Button */}
       <motion.button
         onClick={() => setSoundEnabled(!soundEnabled)}
         whileTap={{ scale: 0.9 }}
-        className={`mt-2 p-1.5 rounded-full text-xs transition-all cursor-pointer border ${
+        className={`mt-3 p-1.5 rounded-full text-xs transition-all cursor-pointer border ${
           isDarkMode
-            ? 'bg-slate-900/80 text-slate-400 hover:text-white border-slate-800'
-            : 'bg-slate-100 text-slate-600 hover:text-slate-900 border-slate-300'
+            ? 'bg-slate-900/80 text-slate-400 hover:text-white border-slate-800 hover:border-slate-700'
+            : 'bg-slate-100 text-slate-600 hover:text-slate-900 border-slate-300 hover:border-slate-400 shadow-sm'
         }`}
         title={soundEnabled ? 'Mute click sound' : 'Enable click sound'}
       >
         {soundEnabled ? (
-          <Volume2 className="w-3 h-3 text-blue-400" />
+          <Volume2 className={`w-3.5 h-3.5 ${isDarkMode ? 'text-cyan-400' : 'text-amber-600'}`} />
         ) : (
-          <VolumeX className="w-3 h-3 text-slate-500" />
+          <VolumeX className="w-3.5 h-3.5 text-slate-400" />
         )}
       </motion.button>
     </div>

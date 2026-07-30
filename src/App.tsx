@@ -134,13 +134,14 @@ export default function App() {
       <ContactSection accentTheme={accentTheme} isDarkMode={isDarkMode} />
 
       {/* Footer */}
-      <Footer accentTheme={accentTheme} setActiveSection={setActiveSection} />
+      <Footer accentTheme={accentTheme} setActiveSection={setActiveSection} isDarkMode={isDarkMode} />
 
       {/* Resume Download / View Modal */}
       <ResumeModal
         isOpen={isResumeOpen}
         onClose={() => setIsResumeOpen(false)}
         accentTheme={accentTheme}
+        isDarkMode={isDarkMode}
       />
     </div>
   );
