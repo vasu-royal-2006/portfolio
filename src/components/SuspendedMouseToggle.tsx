@@ -107,6 +107,11 @@ export const SuspendedMouseToggle: React.FC<SuspendedMouseToggleProps> = ({
       style={{ top: topOffset ? `${topOffset}px` : undefined, transition: 'top 180ms ease' }}
     >
       <motion.div style={{ rotate: springAngle }} className="flex flex-col items-center origin-top relative z-10">
+        {/* Connector nut - visually attaches rope to navbar */}
+        <div className={`w-5 h-5 rounded-full flex items-center justify-center border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-300'} shadow-sm -mb-1`} style={{ boxShadow: isDarkMode ? '0 6px 18px rgba(6,182,212,0.06)' : '0 6px 18px rgba(245,158,11,0.06)' }}>
+          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: accentTheme.hex }} />
+        </div>
+
         {/* Rope */}
         <motion.div className="relative flex flex-col items-center" style={{ height: ropeLength }}>
           <svg className="w-2.5 h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 8 100">
@@ -118,7 +123,7 @@ export const SuspendedMouseToggle: React.FC<SuspendedMouseToggleProps> = ({
           <motion.div animate={{ y: [0, 110, 0] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }} className="w-3 h-3 absolute rounded-full blur-[1px] opacity-80" style={{ backgroundColor: accentTheme.hex }} />
         </motion.div>
 
-        {/* Knob (icons-only) */}
+        {/* Knob (icons-only, circular) */}
         <motion.div
           drag="y"
           dragConstraints={{ top: 0, bottom: 60 }}
@@ -136,18 +141,16 @@ export const SuspendedMouseToggle: React.FC<SuspendedMouseToggleProps> = ({
           whileTap={{ scale: 0.96 }}
           className="relative group cursor-grab active:cursor-grabbing select-none -mt-1"
         >
-          <div className={`relative w-14 h-20 rounded-[1.5rem] p-2.5 transition-all duration-300 shadow-[0_18px_45px_-12px_rgba(15,23,42,0.45)] flex items-center justify-center border ${
-            isDarkMode ? 'bg-[#0b0f17] border-slate-700/80' : 'bg-white border-slate-300'
-          }`}>
-            <div className={`flex items-center justify-center w-full h-full rounded-[1.15rem] ${isDarkMode ? 'text-cyan-300' : 'text-amber-600'}`}>
+          <div className={`relative w-12 h-12 rounded-full p-2 transition-all duration-300 shadow-lg flex items-center justify-center border ${isDarkMode ? 'bg-[#0b0f17] border-slate-700/80' : 'bg-white border-slate-300'}`}>
+            <div className={`flex items-center justify-center w-full h-full ${isDarkMode ? 'text-cyan-300' : 'text-amber-600'}`}>
               {isDarkMode ? (
-                <Moon className="w-8 h-8 text-cyan-400 drop-shadow-[0_0_12px_rgba(6,182,212,0.85)]" />
+                <Moon className="w-6 h-6 text-cyan-400 drop-shadow-[0_0_10px_rgba(6,182,212,0.85)]" />
               ) : (
-                <Sun className="w-8 h-8 text-amber-500 drop-shadow-[0_0_12px_rgba(245,158,11,0.85)]" />
+                <Sun className="w-6 h-6 text-amber-500 drop-shadow-[0_0_10px_rgba(245,158,11,0.85)]" />
               )}
             </div>
 
-            <div className={`absolute -inset-1.5 rounded-[1.5rem] blur-md -z-10 transition-opacity duration-300 ${isHovered || isPulling ? 'opacity-90 scale-105' : 'opacity-30'}`} style={{ backgroundColor: isDarkMode ? '#06b6d4' : '#f59e0b' }} />
+            <div className={`absolute -inset-1 rounded-full blur-md -z-10 transition-opacity duration-300 ${isHovered || isPulling ? 'opacity-90 scale-105' : 'opacity-30'}`} style={{ backgroundColor: isDarkMode ? '#06b6d4' : '#f59e0b' }} />
           </div>
         </motion.div>
       </motion.div>
