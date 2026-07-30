@@ -97,7 +97,7 @@ export const SuspendedMouseToggle: React.FC<SuspendedMouseToggleProps> = ({
   };
 
   return (
-    <div className="fixed top-3 right-3 sm:right-6 z-50 flex flex-col items-center pointer-events-auto">
+    <div className="fixed top-16 right-3 sm:right-6 z-[60] flex flex-col items-center pointer-events-auto" style={{pointerEvents: 'auto'}}>
       <motion.div
         initial={{ opacity: 0, y: -8, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -217,7 +217,7 @@ export const SuspendedMouseToggle: React.FC<SuspendedMouseToggleProps> = ({
           />
 
           <div
-            className={`relative w-14 h-18 rounded-[1.5rem] p-2.5 transition-all duration-300 shadow-[0_18px_45px_-12px_rgba(15,23,42,0.45)] flex flex-col items-center justify-between border ${
+            className={`relative w-14 h-20 rounded-[1.5rem] p-2.5 transition-all duration-300 shadow-[0_18px_45px_-12px_rgba(15,23,42,0.45)] flex flex-col items-center justify-between border ${
               isDarkMode
                 ? 'bg-[#0b0f17] border-slate-700/80 group-hover:border-cyan-400/80'
                 : 'bg-white border-slate-300 group-hover:border-amber-400'
@@ -287,7 +287,7 @@ export const SuspendedMouseToggle: React.FC<SuspendedMouseToggleProps> = ({
               scale: isHovered || isPulling ? 1 : 0.95,
             }}
             transition={{ duration: 0.2 }}
-            className={`absolute right-16 top-1/2 -translate-y-1/2 whitespace-nowrap px-3.5 py-2 rounded-2xl text-xs font-mono shadow-2xl border pointer-events-none flex items-center gap-2.5 ${
+            className={`absolute right-20 top-1/2 -translate-y-1/2 whitespace-nowrap px-3.5 py-2 rounded-2xl text-xs font-mono shadow-2xl border pointer-events-none flex items-center gap-2.5 ${
               isDarkMode
                 ? 'bg-slate-900/95 text-slate-100 border-slate-700/90 shadow-black/80'
                 : 'bg-white/95 text-slate-800 border-slate-300 shadow-slate-400/40'
