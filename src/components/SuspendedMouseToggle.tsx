@@ -18,7 +18,8 @@ export const SuspendedMouseToggle: React.FC<SuspendedMouseToggleProps> = ({
   const [isHovered, setIsHovered] = useState(false);
   const [isPulling, setIsPulling] = useState(false);
   const [isSwinging, setIsSwinging] = useState(false);
-  const [topOffset, setTopOffset] = useState<number | null>(56);
+  // fixed small offset so connector sits at top of viewport (appears attached)
+  const [topOffset, setTopOffset] = useState<number | null>(6);
 
   // Motion values
   const dragY = useMotionValue(0);
@@ -43,16 +44,14 @@ export const SuspendedMouseToggle: React.FC<SuspendedMouseToggleProps> = ({
     return () => clearTimeout(t);
   }, [isPulling, swingAngle]);
 
-  // Compute header height to align rope under navbar
+  // intentionally fixed to viewport top so connector appears attached
   useEffect(() => {
-    const compute = () => {
-      const header = document.querySelector('header');
-      const h = header ? Math.round(header.getBoundingClientRect().height) : 56;
-      setTopOffset(h + 6);
+    const onResize = () => {
+      // keep a small offset from top on resize
+      setTopOffset(6);
     };
-    compute();
-    window.addEventListener('resize', compute);
-    return () => window.removeEventListener('resize', compute);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
 
   const playClickSound = () => {
@@ -103,12 +102,12 @@ export const SuspendedMouseToggle: React.FC<SuspendedMouseToggleProps> = ({
 
   return (
     <div
-      className="fixed right-6 z-[60] flex flex-col items-center pointer-events-auto"
+      className="fixed right-6 z-[70] flex flex-col items-center pointer-events-auto"
       style={{ top: topOffset ? `${topOffset}px` : undefined, transition: 'top 180ms ease' }}
     >
       <motion.div style={{ rotate: springAngle }} className="flex flex-col items-center origin-top relative z-10">
         {/* Connector nut - visually attaches rope to navbar */}
-        <div className={`w-5 h-5 rounded-full flex items-center justify-center border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-300'} shadow-sm -mb-1`} style={{ boxShadow: isDarkMode ? '0 6px 18px rgba(6,182,212,0.06)' : '0 6px 18px rgba(245,158,11,0.06)' }}>
+        <div className={`w-6 h-6 rounded-full flex items-center justify-center border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-300'} shadow-sm`} style={{ boxShadow: isDarkMode ? '0 6px 18px rgba(6,182,212,0.06)' : '0 6px 18px rgba(245,158,11,0.06)', transform: 'translateY(-6px)' }}>
           <div className="w-2 h-2 rounded-full" style={{ backgroundColor: accentTheme.hex }} />
         </div>
 
