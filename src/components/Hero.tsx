@@ -179,7 +179,7 @@ export const Hero: React.FC<HeroProps> = ({
                 <img
                   src={DEVELOPER_INFO.avatar}
                   alt={DEVELOPER_INFO.name}
-                  className="w-full h-full object-cover rounded-full"
+                  className="w-full h-full object-cover object-top rounded-full"
                 />
               </div>
               <span className="absolute bottom-1 right-1 w-4 h-4 bg-emerald-500 border-2 border-slate-900 rounded-full shadow-md" />

@@ -1,7 +1,7 @@
 import { Project, Skill, Experience, SocialLink, AccentThemeConfig } from '../types';
 
 // Importing generated avatar and project assets
-import avatarImg from '../assets/images/vasu_exact_face_1785342828839.jpg';
+import avatarImg from '../assets/images/WhatsApp Image 2026-07-15 at 6.07.33 PM.jpeg';
 import projectAiImg from '../assets/images/project_ai_dev_1785340250885.jpg';
 import projectAnalyticsImg from '../assets/images/project_analytics_1785340267203.jpg';
 import projectEcommerceImg from '../assets/images/project_ecommerce_1785340285505.jpg';

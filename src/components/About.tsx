@@ -61,12 +61,12 @@ export const About: React.FC<AboutProps> = ({ accentTheme, onOpenResume, isDarkM
           transition={{ duration: 0.5 }}
           className="lg:col-span-4 glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6 relative overflow-hidden"
         >
-          <div className="relative group w-40 h-40 sm:w-48 sm:h-48 mx-auto rounded-2xl overflow-hidden border-2 border-slate-700/80 shadow-2xl">
+          <div className="relative group w-48 sm:w-56 aspect-[3/4] mx-auto rounded-2xl overflow-hidden border-2 border-slate-700/80 shadow-2xl">
             <img
               src={DEVELOPER_INFO.avatar}
               alt={DEVELOPER_INFO.name}
               referrerPolicy="no-referrer"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
           </div>
