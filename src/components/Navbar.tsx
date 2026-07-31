@@ -72,11 +72,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Code2 className={`w-5 h-5 ${accentTheme.textAccentClass}`} />
           </div>
           <div className="flex flex-col">
-            <span className="text-base font-bold tracking-tight flex items-center gap-1 text-white">
+            <span className={`text-base font-bold tracking-tight flex items-center gap-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
               Nallamsetty Vasu
               <span className={`w-1.5 h-1.5 rounded-full inline-block ${accentTheme.badgeClass}`} />
             </span>
-            <span className="text-[10px] font-mono tracking-wider text-slate-400">FULL STACK DEV</span>
+            <span className={`text-[10px] font-mono tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>FULL STACK DEV</span>
           </div>
         </a>
 
