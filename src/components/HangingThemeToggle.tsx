@@ -24,7 +24,7 @@ export const HangingThemeToggle: React.FC<HangingThemeToggleProps> = ({
 
   return (
     <motion.div
-      className="fixed top-0 right-16 md:right-32 z-[100] flex flex-col items-center"
+      className="fixed top-0 right-8 md:right-16 z-[100] flex flex-col items-center"
       style={{ transformOrigin: 'top center' }}
       initial={{ rotate: -5 }}
       animate={{
