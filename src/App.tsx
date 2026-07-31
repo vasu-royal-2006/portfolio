@@ -8,6 +8,7 @@ import { ProjectsSection } from './components/ProjectsSection';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { ResumeModal } from './components/ResumeModal';
+import { FloatingThemeToggle } from './components/FloatingThemeToggle';
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('home');
@@ -88,10 +89,15 @@ export default function App() {
     <div
       className={`min-h-screen transition-colors duration-300 font-sans relative ${
         isDarkMode
-          ? 'bg-[#050505] text-slate-100 selection:bg-blue-500/30 selection:text-blue-200'
+          ? 'bg-[#0a0a0a] text-slate-100 selection:bg-blue-500/30 selection:text-blue-200'
           : 'bg-[#f8fafc] text-slate-900 selection:bg-blue-200 selection:text-blue-900'
       }`}
     >
+      {/* Floating Theme Toggle */}
+      <FloatingThemeToggle
+        isDarkMode={isDarkMode}
+        onToggleTheme={toggleTheme}
+      />
       {/* Navbar */}
       <Navbar
         activeSection={activeSection}

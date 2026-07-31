@@ -33,32 +33,28 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ accentTheme, i
   return (
     <section id="projects" className="py-24 px-4 sm:px-8 max-w-7xl mx-auto relative z-10">
       {/* Section Header */}
-      <div className="text-center max-w-3xl mx-auto mb-14 space-y-4">
+      <div className="text-center max-w-3xl mx-auto mb-16 space-y-6">
         <div
-          className={`inline-flex items-center gap-2 px-3 py-1 rounded-full glass-panel border ${
-            isDarkMode ? 'border-slate-800' : 'border-slate-300'
+          className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full border ${
+            isDarkMode ? 'bg-slate-900/50 border-slate-800 text-slate-300' : 'bg-white/80 border-slate-200 text-slate-600 shadow-sm'
           }`}
         >
-          <FolderGit2 className={`w-3.5 h-3.5 ${accentTheme.textAccentClass}`} />
-          <span
-            className={`text-xs font-mono font-medium ${
-              isDarkMode ? 'text-slate-300' : 'text-slate-700'
-            }`}
-          >
-            FEATURED WORKS
+          <FolderGit2 className={`w-4 h-4 ${accentTheme.textAccentClass}`} />
+          <span className="text-xs font-semibold uppercase tracking-wider">
+            Featured Works
           </span>
         </div>
         <h2
-          className={`text-3xl sm:text-5xl font-extrabold tracking-tight ${
+          className={`text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight ${
             isDarkMode ? 'text-white' : 'text-slate-900'
           }`}
         >
-          Architected with perfection &{' '}
-          <span className={`bg-clip-text text-transparent bg-gradient-to-r ${accentTheme.accentClass}`}>
+          Architected with perfection <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-400 to-slate-200" style={{ backgroundImage: `linear-gradient(to right, ${accentTheme.hex}, #94a3b8)` }}>
             engineered for scale
           </span>
         </h2>
-        <p className={`text-base ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+        <p className={`text-lg sm:text-xl font-medium ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
           Explore a collection of production-ready applications, open-source utilities, and AI tools.
         </p>
       </div>
