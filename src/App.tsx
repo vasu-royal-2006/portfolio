@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ACCENT_THEMES } from './data/portfolioData';
 import { AccentColor } from './types';
 import { Navbar } from './components/Navbar';
@@ -9,12 +9,18 @@ import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { ResumeModal } from './components/ResumeModal';
 import { HangingThemeToggle } from './components/HangingThemeToggle';
+import { Loader } from './components/Loader';
+import { AuroraBackground } from './components/effects/AuroraBackground';
+import { ScrollProgress } from './components/effects/ScrollProgress';
+import { CursorGlow } from './components/effects/CursorGlow';
+import { SectionDivider } from './components/effects/SectionDivider';
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('home');
   const [accentColor, setAccentColor] = useState<AccentColor>('blue');
   const [isResumeOpen, setIsResumeOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const accentTheme = ACCENT_THEMES[accentColor] || ACCENT_THEMES.blue;
 
@@ -85,19 +91,34 @@ export default function App() {
     setIsDarkMode((prev) => !prev);
   };
 
+  const handleLoaderComplete = useCallback(() => {
+    setIsLoading(false);
+  }, []);
+
+  // Show loader
+  if (isLoading) {
+    return <Loader onComplete={handleLoaderComplete} />;
+  }
+
   return (
     <div
-      className={`min-h-screen transition-colors duration-300 font-sans relative ${
+      className={`min-h-screen transition-colors duration-500 font-sans relative ${
         isDarkMode
-          ? 'bg-[#0a0a0a] text-slate-100 selection:bg-blue-500/30 selection:text-blue-200'
-          : 'bg-[#f8fafc] text-slate-900 selection:bg-blue-200 selection:text-blue-900'
+          ? 'bg-[#050505] text-slate-100'
+          : 'bg-[#fafbfc] text-slate-900'
       }`}
     >
+      {/* Global Background Effects */}
+      <AuroraBackground isDarkMode={isDarkMode} accentHex={accentTheme.hex} />
+      <CursorGlow />
+      <ScrollProgress accentHex={accentTheme.hex} />
+
       {/* Hanging Theme Toggle */}
       <HangingThemeToggle
         isDarkMode={isDarkMode}
         onToggleTheme={toggleTheme}
       />
+
       {/* Navbar */}
       <Navbar
         activeSection={activeSection}
@@ -118,6 +139,8 @@ export default function App() {
         isDarkMode={isDarkMode}
       />
 
+      <SectionDivider />
+
       {/* About Section */}
       <About
         accentTheme={accentTheme}
@@ -125,8 +148,12 @@ export default function App() {
         isDarkMode={isDarkMode}
       />
 
+      <SectionDivider />
+
       {/* Projects Section */}
       <ProjectsSection accentTheme={accentTheme} isDarkMode={isDarkMode} />
+
+      <SectionDivider />
 
       {/* Contact Section */}
       <ContactSection accentTheme={accentTheme} isDarkMode={isDarkMode} />
