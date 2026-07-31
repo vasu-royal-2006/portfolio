@@ -8,7 +8,6 @@ import { ProjectsSection } from './components/ProjectsSection';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { ResumeModal } from './components/ResumeModal';
-import { SuspendedMouseToggle } from './components/SuspendedMouseToggle';
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('home');
@@ -93,13 +92,6 @@ export default function App() {
           : 'bg-[#f8fafc] text-slate-900 selection:bg-blue-200 selection:text-blue-900'
       }`}
     >
-      {/* Suspended Hanging Mouse Cable Theme Toggle */}
-      <SuspendedMouseToggle
-        isDarkMode={isDarkMode}
-        onToggleTheme={toggleTheme}
-        accentTheme={accentTheme}
-      />
-
       {/* Navbar */}
       <Navbar
         activeSection={activeSection}
