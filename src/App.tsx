@@ -8,7 +8,7 @@ import { ProjectsSection } from './components/ProjectsSection';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { ResumeModal } from './components/ResumeModal';
-import { FloatingThemeToggle } from './components/FloatingThemeToggle';
+import { HangingThemeToggle } from './components/HangingThemeToggle';
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('home');
@@ -93,8 +93,8 @@ export default function App() {
           : 'bg-[#f8fafc] text-slate-900 selection:bg-blue-200 selection:text-blue-900'
       }`}
     >
-      {/* Floating Theme Toggle */}
-      <FloatingThemeToggle
+      {/* Hanging Theme Toggle */}
+      <HangingThemeToggle
         isDarkMode={isDarkMode}
         onToggleTheme={toggleTheme}
       />
